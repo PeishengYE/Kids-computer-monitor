@@ -7,6 +7,7 @@ Kotlin, Android design pattern: MVVM, Coroutines, common open-source library Gli
 Restful API
 ```
 
+# Screenshoots 
 >![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/kids_computer_monitor.png)
 >![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/kids_computer_monitor_01.png)
 
