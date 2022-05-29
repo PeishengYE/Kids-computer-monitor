@@ -123,7 +123,7 @@ class MainViewModel() : ViewModel() {
 
 
 
-    data class  HomeComputerStatus(
+    data class  ComputerStatus(
         var owner: String,
         var computerName: String = "Unknown",
         var osType: String,
@@ -135,12 +135,12 @@ class MainViewModel() : ViewModel() {
 
     )
 
-    private var kidsComputerStatusList = mutableListOf<HomeComputerStatus>()
+    private var kidsComputerStatusList = mutableListOf<ComputerStatus>()
 
     private  var isPortOpen = false
 
     private fun initKidsComputerStatus(){
-        val zihan1 = HomeComputerStatus(
+        val zihan1 = ComputerStatus(
             owner = "ZIHAN",
             osType = "LINUX",
             computerName = "Zihan Linux",
@@ -152,7 +152,7 @@ class MainViewModel() : ViewModel() {
 
         kidsComputerStatusList.add(zihan1)
 
-        val zihan2 = HomeComputerStatus(
+        val zihan2 = ComputerStatus(
             owner = "ZIHAN",
             osType = "WINDOWS",
             computerName = "Zihan Windows",
@@ -163,7 +163,7 @@ class MainViewModel() : ViewModel() {
         kidsComputerStatusList.add(zihan2)
 
 
-        val zihan3 = HomeComputerStatus(
+        val zihan3 = ComputerStatus(
             owner = "ZIHAN",
             osType = "WINDOWS",
             computerName = "Zihan Windows",
@@ -174,7 +174,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(zihan3)
 
-        val zihan4 = HomeComputerStatus(
+        val zihan4 = ComputerStatus(
             owner = "ZIHAN",
             osType = "WINDOWS",
             computerName = "Zihan Windows",
@@ -184,7 +184,7 @@ class MainViewModel() : ViewModel() {
             isOnLine = false
         )
         kidsComputerStatusList.add(zihan4)
-        val zihan5 = HomeComputerStatus(
+        val zihan5 = ComputerStatus(
             owner = "ZIHAN",
             osType = "WINDOWS",
             computerName = "Zihan Windows",
@@ -194,7 +194,7 @@ class MainViewModel() : ViewModel() {
             isOnLine = false
         )
         kidsComputerStatusList.add(zihan5)
-        val ziyi = HomeComputerStatus(
+        val ziyi = ComputerStatus(
             owner = "ZIYI",
             osType = "LINUX",
             computerName = "Ziyi Linux",
@@ -204,7 +204,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(ziyi)
 
-        val ziyi_from_office = HomeComputerStatus(
+        val ziyi_from_office = ComputerStatus(
             owner = "ZIYI",
             osType = "LINUX",
             computerName = "Ziyi Linux",
@@ -215,7 +215,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(ziyi_from_office)
 
-        val zihan_from_office_win = HomeComputerStatus(
+        val zihan_from_office_win = ComputerStatus(
             owner = "ZIHAN_WIN",
             osType = "LINUX",
             computerName = "Ziyi Linux",
@@ -226,7 +226,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(zihan_from_office_win)
 
-        val zihan_from_office_lin = HomeComputerStatus(
+        val zihan_from_office_lin = ComputerStatus(
             owner = "ZIHAN_LINUX",
             osType = "LINUX",
             computerName = "Ziyi Linux",
@@ -237,7 +237,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(zihan_from_office_lin)
 
-        val bitMine_from_office = HomeComputerStatus(
+        val bitMine_from_office = ComputerStatus(
             owner = "bitMine",
             osType = "Win10",
             computerName = "BitMine_WIN10",
@@ -248,7 +248,7 @@ class MainViewModel() : ViewModel() {
         )
 //        kidsComputerStatusList.add(bitMine_from_office)
 
-        val bitMineWindows1 = HomeComputerStatus(
+        val bitMineWindows1 = ComputerStatus(
             owner = "Peisheng",
             osType = "Windows",
             computerName = "BitMine",
@@ -259,7 +259,7 @@ class MainViewModel() : ViewModel() {
         )
         kidsComputerStatusList.add(bitMineWindows1)
 
-        val bitMineWindows2 = HomeComputerStatus(
+        val bitMineWindows2 = ComputerStatus(
             owner = "Peisheng",
             osType = "Windows",
             computerName = "BitMine",
