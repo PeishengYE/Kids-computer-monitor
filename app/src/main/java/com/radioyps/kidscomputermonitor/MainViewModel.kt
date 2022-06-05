@@ -152,27 +152,9 @@ class MainViewModel() : ViewModel() {
 
         kidsComputerStatusList.add(zihan1)
 
-        val zihan2 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "WINDOWS",
-            computerName = "Zihan Windows",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.119",
-            isOnLine = false
-        )
-        kidsComputerStatusList.add(zihan2)
 
 
-        val zihan3 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "WINDOWS",
-            computerName = "Zihan Windows",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.115",
-            portNumber = 8088,
-            isOnLine = false
-        )
-        kidsComputerStatusList.add(zihan3)
+
 
         val zihan4 = ComputerStatus(
             owner = "ZIHAN",
@@ -194,6 +176,18 @@ class MainViewModel() : ViewModel() {
             isOnLine = false
         )
         kidsComputerStatusList.add(zihan5)
+
+        val zihan6 = ComputerStatus(
+            owner = "ZIHAN",
+            osType = "WINDOWS",
+            computerName = "Zihan Windows",
+            macAddrss = ZIHAN_COMPUTER_MAC_1,
+            ipAddress = "192.168.106.120",
+            portNumber = 8088,
+            isOnLine = false
+        )
+        kidsComputerStatusList.add(zihan6)
+
         val ziyi = ComputerStatus(
             owner = "ZIYI",
             osType = "LINUX",
@@ -257,7 +251,7 @@ class MainViewModel() : ViewModel() {
             portNumber = 8088,
             isOnLine = false
         )
-        kidsComputerStatusList.add(bitMineWindows1)
+//        kidsComputerStatusList.add(bitMineWindows1)
 
         val bitMineWindows2 = ComputerStatus(
             owner = "Peisheng",
@@ -268,7 +262,7 @@ class MainViewModel() : ViewModel() {
             portNumber = 8088,
             isOnLine = false
         )
-        kidsComputerStatusList.add(bitMineWindows2)
+//        kidsComputerStatusList.add(bitMineWindows2)
     }
 
 

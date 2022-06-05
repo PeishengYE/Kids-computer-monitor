@@ -6,7 +6,7 @@ When I'm working in my office, or cleaning dishes in kitchen, I still know my so
 - Android design pattern: MVVM, 
 - Coroutines, 
 - Common open-source library Glide
-- Restful API ( Communicating with a Golang web service in Kids computer )
+- Restful API ( Communicating with a Golang web service in kid's computer )
 
 # Architecture 
 >![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/app.architecture.png)
@@ -15,5 +15,6 @@ When I'm working in my office, or cleaning dishes in kitchen, I still know my so
 # Screenshoots 
 >![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/kids_computer_monitor.png)
 >![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/kids_computer_monitor_01.png)
+>![Launch](https://github.com/PeishengYE/Kids-computer-monitor/blob/main/kids_computer_monitor_from_office.jpeg)
 
 
