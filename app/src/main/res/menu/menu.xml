@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_rescan"
-        android:title="@string/scan_menu"
+        android:id="@+id/only_kids"
+        android:title="@string/kids_only"
+        />
+
+    <item
+        android:id="@+id/all_computers"
+        android:title="@string/all_computers"
         />
 
 </menu>

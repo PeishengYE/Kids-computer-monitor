@@ -14,13 +14,14 @@ import java.net.*
 
 
 
-
-const val ZIYI_COMPUTER_MAC = "00:10:f3:6b:2e:da"
-const val ZIHAN_COMPUTER_MAC_1 = "34:e6:d7:17:b7:3a"
-const val ZIHAN_COMPUTER_MAC_2 = "00:13:3b:99:31:af"
-
+const val COMPUTER_1_ENDPOINT = "/zihan"
+const val COMPUTER_2_ENDPOINT = "/ziyi"
+const val COMPUTER_3_ENDPOINT = "/bitmine"
 
 
+const val COMPUTER_1_NAME = "ZIHAN"
+const val COMPUTER_2_NAME = "ZIYI"
+const val COMPUTER_3_NAME = "bitmap"
 
 class MainViewModel() : ViewModel() {
     val TAG = "MainViewModel"
@@ -36,6 +37,9 @@ class MainViewModel() : ViewModel() {
      */
     private val _snackBar = MutableLiveData<String?>()
 
+    val isShowOnlyKidsComputer: LiveData<Boolean>
+        get() = _isShowOnlyKidsComputer
+    private var _isShowOnlyKidsComputer = MutableLiveData<Boolean>(true)
     /**
      * Request a snackbar to display a string.
      */
@@ -124,145 +128,62 @@ class MainViewModel() : ViewModel() {
 
 
     data class  ComputerStatus(
-        var owner: String,
-        var computerName: String = "Unknown",
-        var osType: String,
-        var macAddrss: String,
-        var ipAddress: String,
+
+        var name: String = "Unknown",
+
         var isOnLine: Boolean,
         var alive: Boolean = false,
-        var portNumber: Int = 8088
+        var httpEndPoint: String = "/Unknown"
+
 
     )
 
     private var kidsComputerStatusList = mutableListOf<ComputerStatus>()
 
     private  var isPortOpen = false
+    private  var isPublicUrlfound = false
+    private  var ngrokPublicUrl = ""
+
+    fun setOnlyShowKidsComputer(){
+        _isShowOnlyKidsComputer.value = true
+    }
+
+    fun clearOnlyShowKidsComputer(){
+        _isShowOnlyKidsComputer.value = false
+    }
 
     private fun initKidsComputerStatus(){
-        val zihan1 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "LINUX",
-            computerName = "Zihan Linux",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.231",
+        val computer1 = ComputerStatus(
+            name = COMPUTER_1_NAME,
+
+            httpEndPoint = COMPUTER_1_ENDPOINT,
             isOnLine = false
 
         )
 
-        kidsComputerStatusList.add(zihan1)
+        kidsComputerStatusList.add(computer1)
 
 
-
-
-
-        val zihan4 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "WINDOWS",
-            computerName = "Zihan Windows",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.114",
-            portNumber = 8088,
+        val computer2 = ComputerStatus(
+            name = COMPUTER_2_NAME,
+            httpEndPoint = COMPUTER_2_ENDPOINT,
             isOnLine = false
-        )
-        kidsComputerStatusList.add(zihan4)
-        val zihan5 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "WINDOWS",
-            computerName = "Zihan Windows",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.113",
-            portNumber = 8088,
-            isOnLine = false
-        )
-        kidsComputerStatusList.add(zihan5)
 
-        val zihan6 = ComputerStatus(
-            owner = "ZIHAN",
-            osType = "WINDOWS",
-            computerName = "Zihan Windows",
-            macAddrss = ZIHAN_COMPUTER_MAC_1,
-            ipAddress = "192.168.106.120",
-            portNumber = 8088,
-            isOnLine = false
         )
-        kidsComputerStatusList.add(zihan6)
 
-        val ziyi = ComputerStatus(
-            owner = "ZIYI",
-            osType = "LINUX",
-            computerName = "Ziyi Linux",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "192.168.106.221",
-            isOnLine = false
-        )
-        kidsComputerStatusList.add(ziyi)
+        kidsComputerStatusList.add(computer2)
 
-        val ziyi_from_office = ComputerStatus(
-            owner = "ZIYI",
-            osType = "LINUX",
-            computerName = "Ziyi Linux",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "172.16.18.19",
-            portNumber = 8081,
+        val computer3 = ComputerStatus(
+            name = COMPUTER_3_NAME,
+            httpEndPoint = COMPUTER_3_ENDPOINT,
             isOnLine = false
-        )
-        kidsComputerStatusList.add(ziyi_from_office)
 
-        val zihan_from_office_win = ComputerStatus(
-            owner = "ZIHAN_WIN",
-            osType = "LINUX",
-            computerName = "Ziyi Linux",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "172.16.18.19",
-            portNumber = 8082,
-            isOnLine = false
         )
-        kidsComputerStatusList.add(zihan_from_office_win)
 
-        val zihan_from_office_lin = ComputerStatus(
-            owner = "ZIHAN_LINUX",
-            osType = "LINUX",
-            computerName = "Ziyi Linux",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "172.16.18.19",
-            portNumber = 8083,
-            isOnLine = false
-        )
-        kidsComputerStatusList.add(zihan_from_office_lin)
+        kidsComputerStatusList.add(computer3)
 
-        val bitMine_from_office = ComputerStatus(
-            owner = "bitMine",
-            osType = "Win10",
-            computerName = "BitMine_WIN10",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "172.16.18.19",
-            portNumber = 8084,
-            isOnLine = false
-        )
-//        kidsComputerStatusList.add(bitMine_from_office)
 
-        val bitMineWindows1 = ComputerStatus(
-            owner = "Peisheng",
-            osType = "Windows",
-            computerName = "BitMine",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "192.168.106.110",
-            portNumber = 8088,
-            isOnLine = false
-        )
-//        kidsComputerStatusList.add(bitMineWindows1)
 
-        val bitMineWindows2 = ComputerStatus(
-            owner = "Peisheng",
-            osType = "Windows",
-            computerName = "BitMine",
-            macAddrss = ZIYI_COMPUTER_MAC,
-            ipAddress = "192.168.106.116",
-            portNumber = 8088,
-            isOnLine = false
-        )
-//        kidsComputerStatusList.add(bitMineWindows2)
     }
 
 
@@ -272,46 +193,165 @@ class MainViewModel() : ViewModel() {
 
 
             while (true){
-                kidsComputerStatusList.forEach {
 
-                    isPortForScreenshotOpenByHttp(it.ipAddress, it.portNumber)
-
-                    if (isPortOpen){
-                        Log.v(TAG, "isCheckingPortDone : open on ${it.ipAddress}")
-                        if (it.isOnLine == false ){
-                            _connectStatus.value = "${it.owner} connected"
-                        }
-                        it.isOnLine = true
-                    }else{
-                        Log.v(TAG, "isCheckingPortDone : close on ${it.ipAddress}")
-                        if (it.isOnLine == true ){
-                            _connectStatus.value = "${it.owner} disconnected"
-                        }
-                        it.isOnLine = false
+                    getNgrokPublicUrl()
+                    if (!ngrokPublicUrl.isNullOrEmpty()){
+                        getHomeComputersInfo()
                     }
-                    delay(2000)
-                }
+
+                    delay(10000)
+
             }
 
 
         }
     }
 
+    private fun setComputerStatus(jsonString: String){
+        var name = ""
+        var status = false
+        if (jsonString.contains(COMPUTER_1_NAME, ignoreCase = true)){
+            name = COMPUTER_1_NAME
+            status = true
+        }else{
+            name = COMPUTER_1_NAME
+            status = false
+        }
+
+        kidsComputerStatusList.forEach{
+            if (it.name == name){
+                it.isOnLine = status
+                if(status)
+                   Log.v(TAG, "${it.name} is on line ")
+            }
+        }
+
+
+        if (jsonString.contains(COMPUTER_2_NAME, ignoreCase = true)){
+            name = COMPUTER_2_NAME
+            status = true
+        }else{
+            name = COMPUTER_2_NAME
+            status = false
+        }
+
+        kidsComputerStatusList.forEach{
+            if (it.name == name){
+                it.isOnLine = status
+                if(status)
+                    Log.v(TAG, "${it.name} is on line ")
+            }
+        }
+
+        if (jsonString.contains(COMPUTER_3_NAME, ignoreCase = true)){
+            name = COMPUTER_3_NAME
+            status = true
+        }else{
+            name = COMPUTER_3_NAME
+            status = false
+        }
+
+        kidsComputerStatusList.forEach{
+            if (it.name == name){
+                it.isOnLine = status
+                if(status)
+                    Log.v(TAG, "${it.name} is on line ")
+            }
+        }
 
 
 
-    private suspend fun isPortForScreenshotOpenByHttp(ip: String, port: Int) {
+    }
 
+    private suspend fun  getHomeComputersInfo(){
         withContext(Dispatchers.IO){
             var deferred: Deferred<Boolean> = async {
                 var res = false
                 var codeResponse = 0
-                val mURL = URL("http://${ip}:${port}/getJson")
+                val mURL = URL(ngrokPublicUrl+"/json")
                 try {
                     with((mURL.openConnection() as HttpURLConnection)) {
                         // optional default is GET
                         this.connectTimeout = 2000
                         this.readTimeout = 2000
+
+
+                        this.requestMethod = "GET"
+
+                        println("URL : $url")
+                        println("Response Code : $responseCode")
+                        codeResponse = responseCode
+                        BufferedReader(InputStreamReader(inputStream)).use {
+                            val response = StringBuffer()
+
+                            var inputLine = it.readLine()
+                            while (inputLine != null) {
+                                response.append(inputLine)
+                                inputLine = it.readLine()
+                            }
+                            it.close()
+                            println("Response : $response")
+                            setComputerStatus(response.toString())
+
+                        }
+
+                    }
+                }catch (cause: Throwable) {
+                    // If anything throws an exception, inform the caller
+
+                    Log.v(TAG, "The Ngrok server is not available:  " + cause)
+                    res = false
+
+                }
+                res
+            }
+            deferred.await()
+        }
+    }
+
+    private fun parseNgrokUrl(input: String) : String{
+
+        var regex = Regex("""(\"public_url\"):\"(https://[a-z0-9-]+\.ngrok\.io)\"""")
+        var ids = regex.find(input)
+        if (ids == null){
+            Log.v(TAG,"no valide string from Ngrok ")
+                return ""
+        }
+        var info = ids.destructured.toList()
+
+        if (info.size != 2){
+            return ""
+        }else{
+            Log.v(TAG,"valide string from Ngrok: ${info[1]} " )
+            return info[1]
+        }
+//        Log.v(TAG,"valide string from Ngrok ")
+        /*
+        logTimber!!.log(
+            Log.VERBOSE,
+            "Sensor Name: ${info[0]}, timestamp: ${info[1]}, sessionID: ${info[2]}"
+        )
+
+         */
+        return ""
+    }
+
+    private suspend fun getNgrokPublicUrl() {
+
+        withContext(Dispatchers.IO){
+            var deferred: Deferred<Boolean> = async {
+                var res = false
+                var codeResponse = 0
+                val mURL = URL("https://api.ngrok.com/tunnels")
+                try {
+                    with((mURL.openConnection() as HttpURLConnection)) {
+                        // optional default is GET
+                        this.connectTimeout = 2000
+                        this.readTimeout = 2000
+                        this.setRequestProperty( "Content-Type", "application/json")
+                        this.setRequestProperty( "Authorization", "Bearer 28Mb0yujy0qi6kmZviiB364lV2Z_4QDJTayEKNuy5ZxYVJo34")
+                        this.setRequestProperty( "Ngrok-Version","2")
+
                         requestMethod = "GET"
 
                         println("URL : $url")
@@ -327,7 +367,11 @@ class MainViewModel() : ViewModel() {
                             }
                             it.close()
                             println("Response : $response")
-                            if (response.contains("Nice work!")) {
+                            ngrokPublicUrl = parseNgrokUrl(response.toString())
+                            Log.v(TAG,"-----------> Get Ngrok Public Url: ${ngrokPublicUrl} " )
+                            if (ngrokPublicUrl.isNullOrEmpty()){
+                                res = false
+                            }else{
                                 res = true
                             }
                         }
@@ -336,35 +380,54 @@ class MainViewModel() : ViewModel() {
                 }catch (cause: Throwable) {
                     // If anything throws an exception, inform the caller
 
-                    Log.v(TAG, "  ${ip}:$port is not available:  " + cause)
+                    Log.v(TAG, "The Ngrok server is not available:  " + cause)
                     res = false
-                    if (codeResponse == 404 ) res = true
+
                 }
                 res
             }
-            isPortOpen = deferred.await()
+            isPublicUrlfound = deferred.await()
         }
 
 
     }
 
 
+
     fun updateScreenShot(){
         viewModelScope.launch {
             var URL_SCREENSHOT = ""
+            var someoneOnline = false
+            var noOneOnlineCount = 0
             while (isContinueScanScreenshot) {
+                someoneOnline = false
                 kidsComputerStatusList.forEach {
-                    if (it.isOnLine){
-                        Log.v(TAG, "${it.owner} computer is alive!")
-                        URL_SCREENSHOT = "http://${it.ipAddress}:${it.portNumber}//image/"
-                        _currentComputerOwner.value = it.owner
-                        _currentComputerName.value = it.computerName
-                        _imageUrl.value = URL_SCREENSHOT
-
-
-
+                    if((it.name.contains("ziyi", ignoreCase = true))
+                        ||(it.name.contains("zihan", ignoreCase = true))
+                        || (!(_isShowOnlyKidsComputer.value?:false))
+                    ) {
+                        if (it.isOnLine) {
+                            Log.v(TAG, "${it.name} computer is alive!")
+                            URL_SCREENSHOT = "${ngrokPublicUrl}${it.httpEndPoint}"
+                            _currentComputerOwner.value = it.name
+                            _currentComputerName.value = it.name
+                            _imageUrl.value = URL_SCREENSHOT
+                            _connectStatus.value = "${it.name} connected"
+                            someoneOnline = true
+                        }else{
+                            _connectStatus.value = "${it.name} disconnected"
+                        }
                     }
                     delay(5000)
+                }
+                if (!someoneOnline){
+                    noOneOnlineCount++
+                    if (noOneOnlineCount>= 5){
+                        URL_SCREENSHOT = "${ngrokPublicUrl}/image"
+                        _imageUrl.value = URL_SCREENSHOT
+                    }
+                }else{
+                    noOneOnlineCount = 0
                 }
             }
         }

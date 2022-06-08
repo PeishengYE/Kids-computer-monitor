@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -49,16 +50,15 @@ class MainActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         viewModelLocal = viewModel
         binding.viewModel = viewModel
-        binding.scanningProgress.visibility = View.GONE
-        binding.waitingStatus.visibility = View.GONE
-        binding.scanning.visibility = View.GONE
+        binding.clock.visibility = View.GONE
+
 
 
 
 
         viewModel.currentComputerName.observe(this) { value ->
             value?.let {
-                binding.computerName.setText(value)
+                binding.currentComputer.setText(value)
             }
         }
 
@@ -66,20 +66,22 @@ class MainActivity : AppCompatActivity() {
             value?.let {
                 Log.v(TAG, "currentImagename: ${it}")
                 var tint = 0
-                if (it.contains("Ziyi", ignoreCase = true)) {
-
+                if (it.contains("ZIYI", ignoreCase = true)) {
+                    Log.v(TAG, "currentImagename: ${it}, hit ziyi")
                     tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
                     ImageViewCompat.setImageTintList(binding.kid1Status, ColorStateList.valueOf(tint))
 
                     tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
                     ImageViewCompat.setImageTintList(binding.kid2Status, ColorStateList.valueOf(tint));
-                }else if (it.contains("Zihan", ignoreCase = true)){
-
+                }else if (it.contains("ZIHAN", ignoreCase = true)){
+                    Log.v(TAG, "currentImagename: ${it}, hit zihan")
                     tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
                     ImageViewCompat.setImageTintList(binding.kid1Status, ColorStateList.valueOf(tint))
 
                     tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
                     ImageViewCompat.setImageTintList(binding.kid2Status, ColorStateList.valueOf(tint));
+                }else{
+                    Log.v(TAG, "currentImagename: ${it}, but not hit")
                 }
             }
         }
@@ -116,10 +118,12 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        viewModel.waitingStatus.observe(this) { text ->
-            text?.let {
-                if (text.length > 3){
-                    binding.waitingStatus.setText(text)
+        viewModel.isShowOnlyKidsComputer.observe(this) { isOnlyShowKidsComputer ->
+            isOnlyShowKidsComputer?.let {
+                if (isOnlyShowKidsComputer?:false){
+                    binding.choice.setText("KIDS ONLY")
+                }else{
+                    binding.choice.setText("ALL")
                 }
             }
         }
@@ -135,8 +139,20 @@ class MainActivity : AppCompatActivity() {
 
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.getItemId() === R.id.menu_rescan) {
-
+        if (item.getItemId() === R.id.only_kids) {
+            Toast.makeText(
+                this,
+                "Only show two Kids computers",
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModelLocal.setOnlyShowKidsComputer()
+        }else if (item.getItemId() === R.id.all_computers) {
+            Toast.makeText(
+                this,
+                "Show all computers",
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModelLocal.clearOnlyShowKidsComputer()
         }
         return true
     }

@@ -52,48 +52,6 @@
 
                     app:srcCompat="@mipmap/ic_launcher" />
 
-                <ImageView
-                    android:id="@+id/kid1_status"
-                    android:layout_width="44dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:tint="@color/primaryTextColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/kid2_name"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/kid1_name"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_connection_error" />
-
-
-                <ImageView
-                    android:id="@+id/kid2_status"
-                    android:layout_width="44dp"
-                    android:layout_height="30dp"
-
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="32dp"
-                    android:tint="@color/primaryTextColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/computer_name"
-                    app:layout_constraintStart_toEndOf="@+id/kid2_name"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_connection_error" />
-
-                <TextView
-                    android:id="@+id/kid2_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginLeft="32dp"
-                    android:text="Zihan"
-                    android:textColor="@color/primaryTextColor"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/kid2_status"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/kid1_status"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/toolbar_title"
@@ -117,14 +75,59 @@
                     android:textColor="@color/primaryTextColor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/kid1_status"
-                    app:layout_constraintHorizontal_bias="0.5"
+
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toEndOf="@+id/toolbar_title"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <ImageView
+                    android:id="@+id/kid1_status"
+                    android:layout_width="44dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:tint="@color/primaryTextColor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/kid2_name"
+
+
+                    app:layout_constraintStart_toEndOf="@+id/kid1_name"
+                    app:layout_constraintTop_toTopOf="parent"
+
+
+                    app:srcCompat="@drawable/ic_connection_error" />
 
                 <TextView
-                    android:id="@+id/computer_name"
+                    android:id="@+id/kid2_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:text="Zihan"
+                    android:textColor="@color/primaryTextColor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/kid2_status"
+
+                    app:layout_constraintStart_toEndOf="@+id/kid1_status"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/kid2_status"
+                    android:layout_width="44dp"
+                    android:layout_height="30dp"
+
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="32dp"
+                    android:tint="@color/primaryTextColor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/current_computer"
+                    app:layout_constraintStart_toEndOf="@+id/kid2_name"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_connection_error" />
+
+
+                <TextView
+                    android:id="@+id/current_computer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="68dp"
@@ -132,10 +135,30 @@
                     android:text="ComputerName"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/primaryTextColor"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/choice"
+
+                    app:layout_constraintStart_toEndOf="@+id/kid2_status"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    />
+
+                <TextView
+                    android:id="@+id/choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="68dp"
+                    android:layout_marginLeft="68dp"
+                    android:text="Choice"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/primaryTextColor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/kid2_status"
+
+                    app:layout_constraintStart_toEndOf="@+id/current_computer"
                     app:layout_constraintTop_toTopOf="parent" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,19 +196,19 @@
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
-
-                <ProgressBar
-                    android:id="@+id/scanning"
-                    style="?android:attr/progressBarStyle"
+                <TextView
+                    android:id="@+id/clock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView"
-                    app:layout_constraintEnd_toStartOf="@+id/end_grid"
-                    app:layout_constraintStart_toStartOf="@+id/start_grid"
-                    app:layout_constraintTop_toTopOf="@+id/imageView" />
+                    android:text="12:00:00"
 
-
-
+                    app:layout_constraintDimensionRatio="20:9"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/end_grid"
@@ -200,26 +223,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layout_constraintGuide_begin="16dp" />
-
-                <TextView
-                    android:id="@+id/waiting_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/scanning_mac"
-                    app:layout_constraintEnd_toStartOf="@+id/end_grid"
-                    app:layout_constraintStart_toStartOf="@+id/start_grid"
-                    app:layout_constraintTop_toBottomOf="@+id/scanning" />
-
-                <ProgressBar
-                    android:id="@+id/scanningProgress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="225dp"
-                    android:layout_height="21dp"
-                    app:layout_constraintBottom_toTopOf="@+id/scanning"
-                    app:layout_constraintEnd_toStartOf="@+id/end_grid"
-                    app:layout_constraintStart_toStartOf="@+id/start_grid"
-                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

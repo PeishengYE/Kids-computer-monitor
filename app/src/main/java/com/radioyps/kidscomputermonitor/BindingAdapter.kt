@@ -15,12 +15,12 @@ import com.bumptech.glide.request.RequestOptions
 @BindingAdapter("imageUrl")
 fun bindImage(imgView: ImageView, imgUrl: String?) {
     imgUrl?.let {
-        val imgUri = imgUrl.toUri().buildUpon().scheme("http").build()
+        val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
         Log.v("BindingAdapter", "bindImage()>> started with Glide with URL: " + it)
         Glide.with(imgView.context)
             .load(imgUri)
 
-            .apply(RequestOptions().timeout(3*1000)
+            .apply(RequestOptions().timeout(6*1000)
 //                        .placeholder(R.drawable.ic_broken_image)
                 .error(R.drawable.ic_broken_image).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
             .into(imgView)
