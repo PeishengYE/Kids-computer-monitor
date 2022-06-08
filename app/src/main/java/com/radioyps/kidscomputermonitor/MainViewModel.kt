@@ -1,17 +1,16 @@
 package com.radioyps.kidscomputermonitor
 
+import android.R
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import kotlinx.coroutines.*
 import java.io.BufferedReader
+import java.io.InputStream
 import java.io.InputStreamReader
-
 import java.net.*
-
 
 
 const val COMPUTER_1_ENDPOINT = "/zihan"
@@ -268,7 +267,7 @@ class MainViewModel() : ViewModel() {
             var deferred: Deferred<Boolean> = async {
                 var res = false
                 var codeResponse = 0
-                val mURL = URL(ngrokPublicUrl+"/json")
+                val mURL = URL(ngrokPublicUrl + "/json")
                 try {
                     with((mURL.openConnection() as HttpURLConnection)) {
                         // optional default is GET
@@ -314,7 +313,7 @@ class MainViewModel() : ViewModel() {
         var regex = Regex("""(\"public_url\"):\"(https://[a-z0-9-]+\.ngrok\.io)\"""")
         var ids = regex.find(input)
         if (ids == null){
-            Log.v(TAG,"no valide string from Ngrok ")
+            Log.v(TAG, "no valide string from Ngrok ")
                 return ""
         }
         var info = ids.destructured.toList()
@@ -322,7 +321,7 @@ class MainViewModel() : ViewModel() {
         if (info.size != 2){
             return ""
         }else{
-            Log.v(TAG,"valide string from Ngrok: ${info[1]} " )
+            Log.v(TAG, "valide string from Ngrok: ${info[1]} ")
             return info[1]
         }
 //        Log.v(TAG,"valide string from Ngrok ")
@@ -336,21 +335,29 @@ class MainViewModel() : ViewModel() {
         return ""
     }
 
+
+
+
     private suspend fun getNgrokPublicUrl() {
 
         withContext(Dispatchers.IO){
             var deferred: Deferred<Boolean> = async {
                 var res = false
                 var codeResponse = 0
+                var ngrokApiKey = MonitorApplication.ngrokApiKey
+                Log.v(TAG, "The Ngrok API key:  " + ngrokApiKey)
                 val mURL = URL("https://api.ngrok.com/tunnels")
                 try {
                     with((mURL.openConnection() as HttpURLConnection)) {
                         // optional default is GET
                         this.connectTimeout = 2000
                         this.readTimeout = 2000
-                        this.setRequestProperty( "Content-Type", "application/json")
-                        this.setRequestProperty( "Authorization", "Bearer 28Mb0yujy0qi6kmZviiB364lV2Z_4QDJTayEKNuy5ZxYVJo34")
-                        this.setRequestProperty( "Ngrok-Version","2")
+                        this.setRequestProperty("Content-Type", "application/json")
+                        this.setRequestProperty(
+                            "Authorization",
+                            "Bearer " + ngrokApiKey
+                        )
+                        this.setRequestProperty("Ngrok-Version", "2")
 
                         requestMethod = "GET"
 
@@ -368,7 +375,7 @@ class MainViewModel() : ViewModel() {
                             it.close()
                             println("Response : $response")
                             ngrokPublicUrl = parseNgrokUrl(response.toString())
-                            Log.v(TAG,"-----------> Get Ngrok Public Url: ${ngrokPublicUrl} " )
+                            Log.v(TAG, "-----------> Get Ngrok Public Url: ${ngrokPublicUrl} ")
                             if (ngrokPublicUrl.isNullOrEmpty()){
                                 res = false
                             }else{

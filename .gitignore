@@ -2,6 +2,7 @@
 *.swp
 .gradle
 /local.properties
+/app/src/main/res/raw/ngrok_key.txt
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store

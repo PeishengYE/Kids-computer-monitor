@@ -18,6 +18,8 @@ import androidx.lifecycle.observe
 
 import com.google.android.material.snackbar.Snackbar
 import com.radioyps.kidscomputermonitor.databinding.ActivityMainBinding
+import java.io.BufferedReader
+import java.io.InputStream
 
 
 /**
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.lifecycleOwner = this
         val rootLayout: ConstraintLayout = binding.rootLayout
+
 
 
 
@@ -132,6 +135,8 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         getMenuInflater().inflate(R.menu.menu, menu);
