@@ -15,11 +15,14 @@ import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
-
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.security.ProviderInstaller
 import com.google.android.material.snackbar.Snackbar
 import com.radioyps.kidscomputermonitor.databinding.ActivityMainBinding
-import java.io.BufferedReader
-import java.io.InputStream
+import java.security.KeyManagementException
+import java.security.NoSuchAlgorithmException
+import javax.net.ssl.SSLContext
 
 
 /**
@@ -36,6 +39,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        try {
+            ProviderInstaller.installIfNeeded(applicationContext)
+            val sslContext: SSLContext
+            sslContext = SSLContext.getInstance("TLSv1.2")
+            sslContext.init(null, null, null)
+            sslContext.createSSLEngine()
+        } catch (e: GooglePlayServicesRepairableException) {
+            e.printStackTrace()
+        } catch (e: GooglePlayServicesNotAvailableException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        } catch (e: KeyManagementException) {
+            e.printStackTrace()
+        }
 
         val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
@@ -72,17 +91,29 @@ class MainActivity : AppCompatActivity() {
                 if (it.contains("ZIYI", ignoreCase = true)) {
                     Log.v(TAG, "currentImagename: ${it}, hit ziyi")
                     tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
-                    ImageViewCompat.setImageTintList(binding.kid1Status, ColorStateList.valueOf(tint))
+                    ImageViewCompat.setImageTintList(
+                        binding.kid1Status,
+                        ColorStateList.valueOf(tint)
+                    )
 
                     tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
-                    ImageViewCompat.setImageTintList(binding.kid2Status, ColorStateList.valueOf(tint));
+                    ImageViewCompat.setImageTintList(
+                        binding.kid2Status,
+                        ColorStateList.valueOf(tint)
+                    );
                 }else if (it.contains("ZIHAN", ignoreCase = true)){
                     Log.v(TAG, "currentImagename: ${it}, hit zihan")
                     tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
-                    ImageViewCompat.setImageTintList(binding.kid1Status, ColorStateList.valueOf(tint))
+                    ImageViewCompat.setImageTintList(
+                        binding.kid1Status,
+                        ColorStateList.valueOf(tint)
+                    )
 
                     tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
-                    ImageViewCompat.setImageTintList(binding.kid2Status, ColorStateList.valueOf(tint));
+                    ImageViewCompat.setImageTintList(
+                        binding.kid2Status,
+                        ColorStateList.valueOf(tint)
+                    );
                 }else{
                     Log.v(TAG, "currentImagename: ${it}, but not hit")
                 }
@@ -100,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                         binding.kid1Status.setImageResource(R.drawable.round_cast_connected_20)
                     }
                 }
-                if (it.contains("Zihan",ignoreCase = true)){
+                if (it.contains("Zihan", ignoreCase = true)){
                     if (it.contains("disconnected")){
 
                         binding.kid2Status.setImageResource(R.drawable.ic_connection_error)
@@ -127,6 +158,14 @@ class MainActivity : AppCompatActivity() {
                     binding.choice.setText("KIDS ONLY")
                 }else{
                     binding.choice.setText("ALL")
+                }
+            }
+        }
+
+        viewModel.isShowPhotos.observe(this) { isShowPhotos ->
+            isShowPhotos?.let {
+                if (isShowPhotos?:false){
+                    binding.choice.setText("Photos Only")
                 }
             }
         }
@@ -158,6 +197,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
             viewModelLocal.clearOnlyShowKidsComputer()
+         }else if (item.getItemId() === R.id.photos) {
+            Toast.makeText(
+                this,
+                "Show photos",
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModelLocal.setShowPhotoOnly()
         }
         return true
     }

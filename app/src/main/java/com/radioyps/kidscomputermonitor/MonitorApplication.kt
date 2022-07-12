@@ -5,6 +5,7 @@ package com.radioyps.kidscomputermonitor
 import android.app.Application
 import android.os.Build
 import android.util.Log
+import androidx.multidex.MultiDexApplication
 import androidx.work.*
 
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit
  * Override application to setup background work via WorkManager
  */
 private const val TAG = "MonitorApplication"
-class MonitorApplication : Application() {
+class MonitorApplication : MultiDexApplication() {
 
     /**
      * onCreate is called before the first screen is shown to the user.

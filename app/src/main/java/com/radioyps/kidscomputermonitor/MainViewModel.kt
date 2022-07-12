@@ -39,6 +39,15 @@ class MainViewModel() : ViewModel() {
     val isShowOnlyKidsComputer: LiveData<Boolean>
         get() = _isShowOnlyKidsComputer
     private var _isShowOnlyKidsComputer = MutableLiveData<Boolean>(true)
+
+
+    val isShowPhotos: LiveData<Boolean>
+        get() = _isShowPhotos
+    private var _isShowPhotos = MutableLiveData<Boolean>(false)
+
+
+
+
     /**
      * Request a snackbar to display a string.
      */
@@ -151,6 +160,10 @@ class MainViewModel() : ViewModel() {
         _isShowOnlyKidsComputer.value = false
     }
 
+    fun setShowPhotoOnly(){
+        _isShowPhotos.value = true
+    }
+
     private fun initKidsComputerStatus(){
         val computer1 = ComputerStatus(
             name = COMPUTER_1_NAME,
@@ -162,7 +175,7 @@ class MainViewModel() : ViewModel() {
 
         kidsComputerStatusList.add(computer1)
 
-
+        _isShowPhotos.value = false
         val computer2 = ComputerStatus(
             name = COMPUTER_2_NAME,
             httpEndPoint = COMPUTER_2_ENDPOINT,
@@ -407,6 +420,12 @@ class MainViewModel() : ViewModel() {
             var someoneOnline = false
             var noOneOnlineCount = 0
             while (isContinueScanScreenshot) {
+                if (_isShowPhotos.value?:false){
+                    URL_SCREENSHOT = "${ngrokPublicUrl}/image"
+                    _imageUrl.value = URL_SCREENSHOT
+                    delay(25000)
+                    continue
+                }
                 someoneOnline = false
                 kidsComputerStatusList.forEach {
                     if((it.name.contains("ziyi", ignoreCase = true))
@@ -425,7 +444,7 @@ class MainViewModel() : ViewModel() {
                             _connectStatus.value = "${it.name} disconnected"
                         }
                     }
-                    delay(5000)
+
                 }
                 if (!someoneOnline){
                     noOneOnlineCount++
@@ -436,6 +455,8 @@ class MainViewModel() : ViewModel() {
                 }else{
                     noOneOnlineCount = 0
                 }
+
+                delay(5000)
             }
         }
     }

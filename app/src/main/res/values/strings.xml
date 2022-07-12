@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">Monitor V0608 </string>
+    <string name="app_name">Monitor internet V0622 </string>
     <string name="click_to_start">Click to start</string>
     <string name="computer_online">Computer online</string>
     <string name="waiting">Waiting</string>
     <string name="scanning_mac">scanning All IP Mac ...</string>
     <string name="kids_only">Kids computer only</string>
     <string name="all_computers">Show all computers</string>
+    <string name="photos">Show photos</string>
 </resources>
