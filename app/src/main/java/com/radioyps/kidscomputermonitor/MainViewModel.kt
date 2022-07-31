@@ -499,8 +499,8 @@ class MainViewModel() : ViewModel() {
                 try {
                     with((mURL.openConnection() as HttpURLConnection)) {
                         // optional default is GET
-                        this.connectTimeout = 2000
-                        this.readTimeout = 2000
+                        this.connectTimeout = 4000
+                        this.readTimeout = 4000
 
 
                         this.requestMethod = "GET"

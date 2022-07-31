@@ -18,8 +18,10 @@ import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.common.GooglePlayServicesUtil.getErrorDialog
 import com.google.android.gms.security.ProviderInstaller
 import com.google.android.material.snackbar.Snackbar
 import com.radioyps.kidscomputermonitor.databinding.ActivityMainBinding
@@ -50,7 +52,13 @@ class MainActivity : AppCompatActivity() {
             sslContext.init(null, null, null)
             sslContext.createSSLEngine()
         } catch (e: GooglePlayServicesRepairableException) {
+            Log.v(TAG, "ProviderInstaller: GooglePlayServicesRepairableException")
             e.printStackTrace()
+            val errorCode = e.connectionStatusCode
+            Log.v(TAG, "ProviderInstaller: GooglePlayServicesRepairableException: error code: " + errorCode + " Start Error Dialog")
+            GoogleApiAvailability.getInstance().getErrorDialog(this, errorCode,8989).show()
+
+            Log.v(TAG, "ProviderInstaller: GooglePlayServicesRepairableException: error code: " + errorCode + " end Error Dialog")
         } catch (e: GooglePlayServicesNotAvailableException) {
             e.printStackTrace()
         } catch (e: NoSuchAlgorithmException) {
