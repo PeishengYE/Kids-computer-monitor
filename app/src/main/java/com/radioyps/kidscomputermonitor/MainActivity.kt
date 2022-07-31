@@ -1,7 +1,10 @@
 package com.radioyps.kidscomputermonitor
 
+import android.app.Activity
 import android.content.res.ColorStateList
+import android.graphics.Point
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -72,7 +75,12 @@ class MainActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         viewModelLocal = viewModel
         binding.viewModel = viewModel
-        binding.clock.visibility = View.GONE
+        binding.clock.visibility = View.VISIBLE
+        binding.clock.setTextColor(resources.getColor(R.color.clockColor))
+
+        binding.timestamp.visibility = View.VISIBLE
+        binding.timestamp.setTextColor(resources.getColor(R.color.timeStampColor))
+//        binding.clock.setTextSize(2)
 
 
 
@@ -142,6 +150,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.imageBitmap.observe(this) { bitmap ->
+
+            if(bitmap != null){
+                binding.imageView.setImageBitmap(bitmap)
+            }
+        }
+
+        viewModel.imageTimeStamp.observe(this) { timeStamp ->
+
+            if(timeStamp != null){
+                binding.timestamp.setText(timeStamp)
+            }
+        }
+
+        viewModel.timeOnScreen.observe(this) { time ->
+
+            if(time != null){
+                binding.clock.setText(time)
+            }
+        }
 
 
         viewModel.snackbar.observe(this) { text ->
@@ -170,6 +198,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val metrics = DisplayMetrics()
+        (this as Activity).windowManager.defaultDisplay.getMetrics(metrics)
+        val screenWidth = metrics.widthPixels
+        val screenHeight = metrics.heightPixels
+        var size = Point()
+        (this as Activity).windowManager.defaultDisplay.getSize(size)
+
+        Log.v(
+            TAG,
+            "onCreate()>> : screenSize Width  ${size.x},  screenSize Height ${size.y} "
+        )
+
+        Log.v(
+            TAG,
+            "onCreate()>> : screenWidth  ${screenWidth},  screenHeight ${screenHeight} "
+        )
+        viewModel.setImageViewDimention(screenWidth, screenHeight)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

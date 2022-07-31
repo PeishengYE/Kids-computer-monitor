@@ -12,6 +12,8 @@ import com.bumptech.glide.request.RequestOptions
 
 /**
  * Uses the Glide library to load an image by URL into an [ImageView]
+ * Glide think the same URL have same Image, that's why I have to put
+ * .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
  */
 @BindingAdapter("imageUrl")
 fun bindImage(imgView: ImageView, imgUrl: String?) {
@@ -19,11 +21,12 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
         Log.v("BindingAdapter", "bindImage()>> started with Glide with URL: " + it)
         Glide.with(imgView.context)
-            .load(imgUri)
-//            .transition(withCrossFade(2))
-            .apply(RequestOptions().timeout(6*1000)
-//                        .placeholder(R.drawable.ic_broken_image)
-                .error(R.drawable.ic_broken_image).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+            .load(imgUri).apply(RequestOptions().timeout(10*1000).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+////            .transition(withCrossFade(2))
+//            .apply(RequestOptions().timeout(6*1000)
+////                        .placeholder(R.drawable.ic_broken_image)
+////                .error(R.drawable.ic_broken_image).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+//                .error(R.drawable.ic_broken_image).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
             .into(imgView)
     }
 }

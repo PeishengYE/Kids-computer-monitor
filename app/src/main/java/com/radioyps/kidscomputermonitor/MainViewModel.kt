@@ -1,6 +1,6 @@
 package com.radioyps.kidscomputermonitor
 
-import android.R
+import android.graphics.*
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +11,8 @@ import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 const val COMPUTER_1_ENDPOINT = "/zihan"
@@ -62,7 +64,8 @@ class MainViewModel() : ViewModel() {
     val scanningProgress: LiveData<Int>
         get() = _scanningProgress
 
-
+    var imageViewWidth: Int = 0
+    var imageViewHeight: Int = 0
 
     private val _spinner = MutableLiveData<Boolean>(false)
 
@@ -87,16 +90,44 @@ class MainViewModel() : ViewModel() {
     val waitingStatus: LiveData<String>
         get() = _waitingStatus
 
+
     /**
      * LiveData with formatted tap count.
      */
-    private val _imageUrl = MutableLiveData<String>()
+    private val _imageBitmap = MutableLiveData<Bitmap>()
 
     /**
      * Public view of tap live data.
      */
-    val imageUrl: LiveData<String>
-        get() = _imageUrl
+    val timeOnScreen: LiveData<String>
+        get() = _timeOnScreen
+
+    /**
+     * LiveData with formatted tap count.
+     */
+    private val _timeOnScreen = MutableLiveData<String>()
+
+
+    /**
+     * Public view of tap live data.
+     */
+    val imageTimeStamp: LiveData<String>
+        get() = _imageTimeStamp
+
+    /**
+     * LiveData with formatted tap count.
+     */
+    private val _imageTimeStamp = MutableLiveData<String>()
+
+
+    /**
+     * Public view of tap live data.
+     */
+    val imageBitmap: LiveData<Bitmap>
+        get() = _imageBitmap
+
+
+
 
     /**
      * LiveData with formatted tap count.
@@ -121,7 +152,7 @@ class MainViewModel() : ViewModel() {
         get() = _currentComputerName
 
 
-
+    private var bmp: Bitmap? = null
 
     private val _connectStatus = MutableLiveData<String>("kids computer disconnected")
 
@@ -154,14 +185,21 @@ class MainViewModel() : ViewModel() {
 
     fun setOnlyShowKidsComputer(){
         _isShowOnlyKidsComputer.value = true
+        _isShowPhotos.value = false
     }
 
     fun clearOnlyShowKidsComputer(){
         _isShowOnlyKidsComputer.value = false
+        _isShowPhotos.value = false
     }
 
     fun setShowPhotoOnly(){
         _isShowPhotos.value = true
+    }
+
+    fun setImageViewDimention(height: Int, width: Int){
+        imageViewHeight = height
+        imageViewWidth = width
     }
 
     private fun initKidsComputerStatus(){
@@ -198,7 +236,70 @@ class MainViewModel() : ViewModel() {
 
     }
 
+    fun drawTextToBitmap(
+        name: String?,
+        image: Bitmap
+    ): Bitmap? {
+        var gText = ""
 
+        var image = image
+        var bitmapConfig = image.config
+        // set default bitmap config if none
+        if (bitmapConfig == null) {
+//            bitmapConfig = Bitmap.Config.ARGB_8888
+            bitmapConfig = Bitmap.Config.RGB_565
+        }
+
+
+        // resource bitmaps are imutable,
+        // so we need to convert it to mutable one
+//        image = image.copy(bitmapConfig, true)
+          val canvas = Canvas(image)
+        // new antialised Paint
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        // text color - #3D3D3D
+        paint.color = Color.rgb(0, 0, 0xff)
+        // text size in pixels
+        if (image.width < 1500){
+            paint.setTextSize((14 * 2.0).toFloat())
+        }else{
+            paint.setTextSize((14 * 10.0).toFloat())
+        }
+
+        // text shadow
+        paint.setShadowLayer(1f, 0f, 1f, Color.RED)
+
+        val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        gText = sdf.format(Date()) + " " + name
+        // draw text to the Canvas center
+        val bounds = Rect()
+        paint.getTextBounds(gText, 0, gText.length, bounds)
+        val x = (image.width - bounds.width()) / 2
+        val y = (image.height + bounds.height()) / 2-100
+        /* Drawing X: 891 Y: 552 */
+        Log.v(TAG, "Drawing image: width: ${image.width}, height: ${image.height} X: ${x} Y: ${y}")
+        canvas.drawText(gText, x.toFloat(), y.toFloat(), paint)
+        return image
+    }
+
+
+    private fun updateTime(){
+        viewModelScope.launch {
+
+
+            while (true){
+
+                val sdf = SimpleDateFormat("MMdd_HH:mm:ss", Locale.getDefault())
+                val currentDateandTime: String = sdf.format(Date())
+//                Log.v(TAG, " updateTime()>> " + currentDateandTime)
+                _timeOnScreen.value = currentDateandTime
+                delay(1000)
+
+            }
+
+
+        }
+    }
 
     private fun isKidsComputerOnLine(){
         viewModelScope.launch {
@@ -208,6 +309,10 @@ class MainViewModel() : ViewModel() {
 
                     getNgrokPublicUrl()
                     if (!ngrokPublicUrl.isNullOrEmpty()){
+                        
+                        
+                        
+                        
                         getHomeComputersInfo()
                     }
 
@@ -273,6 +378,116 @@ class MainViewModel() : ViewModel() {
 
 
 
+    }
+
+    fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+
+        // Raw height and width of image
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+        Log.v(TAG, " calculateInSampleSize()>> imageWidth: " + width + " imageHeight: " + height)
+        Log.v(TAG, " calculateInSampleSize()>> reqWidth: " + reqWidth + " reqHeight: " + reqHeight)
+
+        if (height > reqHeight || width > reqWidth) {
+
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        Log.v(TAG, " calculateInSampleSize()>> inSampleSize: " + inSampleSize)
+        return inSampleSize
+    }
+
+
+    private  fun decodeSampledBitmap(
+        input: ByteArray
+
+    ): Bitmap? {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        return BitmapFactory.Options().run {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeByteArray(input, 0, input.size,this)
+
+            // Calculate inSampleSize
+            inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
+
+            // Decode bitmap with inSampleSize set
+            inJustDecodeBounds = false
+            Log.v(TAG, " decodeSampledBitmap()>> inSampleSize: " + inSampleSize + ", Start decoding...")
+            BitmapFactory.decodeByteArray(input, 0, input.size,this)
+
+        }
+    }
+
+
+     private suspend fun downloadImageFromPath(path: String?) {
+
+
+        withContext(Dispatchers.IO) {
+            var deferred: Deferred<Bitmap?> = async {
+                var res: Bitmap? = null
+                var inputStreamImage: ByteArray? = null
+
+                var responseCode = -1
+                try {
+                    val url = URL(path)
+                    Log.v(TAG, " downloadImageFromPath()>> downloading from " + path)
+                    val con = url.openConnection() as HttpURLConnection
+                    con.doInput = true
+                    con.connect()
+                    responseCode = con.responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        Log.v(TAG, " downloadImageFromPath()>> Start downloading")
+                        //download
+                        inputStreamImage = con.inputStream.readBytes()
+
+//                        val options = BitmapFactory.Options()
+//                        options.inPreferredConfig = Bitmap.Config.RGB_565
+//                        options.inSampleSize = 3
+
+//                        res = BitmapFactory.decodeStream(inputStreamImage, null, options)
+                        res = decodeSampledBitmap(inputStreamImage)
+                        if (res != null){
+
+//                            res = Bitmap.createScaledBitmap(res, 800,285, false)
+//                            res = drawTextToBitmap(path?.substringAfterLast('/'), res)
+
+                            Log.v(
+                                TAG,
+                                " downloadImageFromPath()>> downloaded bmp file successfully"
+                            )
+
+                        }else{
+                            Log.v(TAG, " downloadImageFromPath()>> downloaded bmp file failed")
+                        }
+
+                    } else {
+
+                        Log.v(
+                            TAG,
+                            " downloadImageFromPath()>> downloaded bmp file failed with HTTP connection error"
+                        )
+                    }
+
+                } catch (ex: Exception) {
+                    Log.v(
+                        TAG,
+                        " downloadImageFromPath()>> downloaded bmp file failed with Exception"
+                    )
+                    Log.e("Exception", ex.toString())
+
+                }
+
+                res
+            }
+            bmp = deferred.await()
+        }
     }
 
     private suspend fun  getHomeComputersInfo(){
@@ -363,8 +578,8 @@ class MainViewModel() : ViewModel() {
                 try {
                     with((mURL.openConnection() as HttpURLConnection)) {
                         // optional default is GET
-                        this.connectTimeout = 2000
-                        this.readTimeout = 2000
+                        this.connectTimeout = 4000
+                        this.readTimeout = 4000
                         this.setRequestProperty("Content-Type", "application/json")
                         this.setRequestProperty(
                             "Authorization",
@@ -412,6 +627,21 @@ class MainViewModel() : ViewModel() {
 
     }
 
+    private suspend fun getImage(url: String):Boolean{
+        bmp = null
+        var res = false
+        Log.v(TAG, " getImage()>>  " + url)
+        downloadImageFromPath(url)
+        if (bmp != null){
+            _imageBitmap.value = bmp
+
+            val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+            val gText = sdf.format(Date()) + " " + url?.substringAfterLast('/')
+            _imageTimeStamp.value = gText
+        }
+        if (bmp != null) res = true
+        return res
+    }
 
 
     fun updateScreenShot(){
@@ -422,8 +652,9 @@ class MainViewModel() : ViewModel() {
             while (isContinueScanScreenshot) {
                 if (_isShowPhotos.value?:false){
                     URL_SCREENSHOT = "${ngrokPublicUrl}/image"
-                    _imageUrl.value = URL_SCREENSHOT
-                    delay(25000)
+                    val goodDownloading = getImage(URL_SCREENSHOT)
+                    if (goodDownloading)
+                       delay(25000)
                     continue
                 }
                 someoneOnline = false
@@ -435,14 +666,26 @@ class MainViewModel() : ViewModel() {
                         if (it.isOnLine) {
                             Log.v(TAG, "${it.name} computer is alive!")
                             URL_SCREENSHOT = "${ngrokPublicUrl}${it.httpEndPoint}"
+
                             _currentComputerOwner.value = it.name
                             _currentComputerName.value = it.name
-                            _imageUrl.value = URL_SCREENSHOT
+                            var count = 5
+                            while (count > 0){
+                                val goodDownloading = getImage(URL_SCREENSHOT)
+                                if (goodDownloading){
+                                   break
+                                }
+                                delay(200)
+                                count --
+                            }
+                            delay(5000)
+
                             _connectStatus.value = "${it.name} connected"
                             someoneOnline = true
                         }else{
                             _connectStatus.value = "${it.name} disconnected"
                         }
+//                        delay(5000)
                     }
 
                 }
@@ -450,13 +693,15 @@ class MainViewModel() : ViewModel() {
                     noOneOnlineCount++
                     if (noOneOnlineCount>= 5){
                         URL_SCREENSHOT = "${ngrokPublicUrl}/image"
-                        _imageUrl.value = URL_SCREENSHOT
+                        val goodDownloading = getImage(URL_SCREENSHOT)
+                        if (goodDownloading)
+                            delay(5000)
                     }
                 }else{
                     noOneOnlineCount = 0
                 }
 
-                delay(5000)
+
             }
         }
     }
@@ -472,6 +717,7 @@ class MainViewModel() : ViewModel() {
         initKidsComputerStatus()
 
         isKidsComputerOnLine()
+        updateTime()
         isContinueScanScreenshot = true
         updateScreenShot()
     }
