@@ -1,6 +1,7 @@
 package com.radioyps.kidscomputermonitor
 
 import android.graphics.*
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -395,7 +396,7 @@ class MainViewModel() : ViewModel() {
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+            while (halfHeight / inSampleSize >= reqHeight || halfWidth / inSampleSize >= reqWidth) {
                 inSampleSize *= 2
             }
         }
@@ -415,12 +416,23 @@ class MainViewModel() : ViewModel() {
             BitmapFactory.decodeByteArray(input, 0, input.size,this)
 
             // Calculate inSampleSize
-            inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+                 /* reduce the memory usage to prevent out of memory issue */
+                 inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)*2
+            else{
+                inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
+            }
 
             // Decode bitmap with inSampleSize set
             inJustDecodeBounds = false
             Log.v(TAG, " decodeSampledBitmap()>> inSampleSize: " + inSampleSize + ", Start decoding...")
-            BitmapFactory.decodeByteArray(input, 0, input.size,this)
+            try{
+                BitmapFactory.decodeByteArray(input, 0, input.size,this)
+            } catch (ex: Exception) {
+
+            Log.e("Exception", ex.toString())
+            null
+        }
 
         }
     }
@@ -443,7 +455,8 @@ class MainViewModel() : ViewModel() {
                     con.connect()
                     responseCode = con.responseCode
                     if (responseCode == HttpURLConnection.HTTP_OK) {
-                        Log.v(TAG, " downloadImageFromPath()>> Start downloading")
+                        Log.v(TAG, " downloadImageFromPath()>> Start downloading with size: " + con.inputStream.available())
+
                         //download
                         inputStreamImage = con.inputStream.readBytes()
 
@@ -628,7 +641,13 @@ class MainViewModel() : ViewModel() {
     }
 
     private suspend fun getImage(url: String):Boolean{
-        bmp = null
+        if(bmp != null){
+            /* reduce the memory usage to prevent out of memory issue
+            *  Very important to recycle the bitmap as soon as we do not need it */
+            bmp?.recycle()
+            bmp = null
+        }
+
         var res = false
         Log.v(TAG, " getImage()>>  " + url)
         downloadImageFromPath(url)

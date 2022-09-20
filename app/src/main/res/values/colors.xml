@@ -8,8 +8,8 @@
     <color name="secondaryDarkColor">#004c8c</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#ffffff</color>
-    <color name="clockColor">#ff0000</color>
-    <color name="timeStampColor">#00ffff</color>
+    <color name="clockColor">#00ffff</color>
+    <color name="timeStampColor">#ff0000</color>
     <color name="clockTag">#616161</color>
     <color name="highlightGreen">#76ff03</color>
 </resources>
