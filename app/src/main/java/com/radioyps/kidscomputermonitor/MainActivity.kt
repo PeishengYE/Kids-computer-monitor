@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 */
         val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        setSupportActionBar(binding.toolbar)
+
         binding.lifecycleOwner = this
         val rootLayout: ConstraintLayout = binding.rootLayout
 
@@ -99,69 +99,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        viewModel.currentComputerName.observe(this) { value ->
-            value?.let {
-                binding.currentComputer.setText(value)
-            }
-        }
 
-        viewModel.currentComputerOwner.observe(this) { value ->
-            value?.let {
-                Log.v(TAG, "currentImagename: ${it}")
-                var tint = 0
-                if (it.contains("ZIYI", ignoreCase = true)) {
-                    Log.v(TAG, "currentImagename: ${it}, hit ziyi")
-                    tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
-                    ImageViewCompat.setImageTintList(
-                        binding.kid1Status,
-                        ColorStateList.valueOf(tint)
-                    )
 
-                    tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
-                    ImageViewCompat.setImageTintList(
-                        binding.kid2Status,
-                        ColorStateList.valueOf(tint)
-                    );
-                }else if (it.contains("ZIHAN", ignoreCase = true)){
-                    Log.v(TAG, "currentImagename: ${it}, hit zihan")
-                    tint = ContextCompat.getColor(applicationContext, R.color.primaryTextColor);
-                    ImageViewCompat.setImageTintList(
-                        binding.kid1Status,
-                        ColorStateList.valueOf(tint)
-                    )
 
-                    tint = ContextCompat.getColor(applicationContext, R.color.highlightGreen);
-                    ImageViewCompat.setImageTintList(
-                        binding.kid2Status,
-                        ColorStateList.valueOf(tint)
-                    );
-                }else{
-                    Log.v(TAG, "currentImagename: ${it}, but not hit")
-                }
-            }
-        }
 
-        viewModel.connectStatus.observe(this) { value ->
-            value?.let {
-                Log.v(TAG, "connectStatus: ${value}")
-                if (it.contains("Ziyi", ignoreCase = true)){
-                    if (it.contains("disconnected")){
-                        binding.kid1Status.setImageResource(R.drawable.ic_connection_error)
 
-                    }else{
-                        binding.kid1Status.setImageResource(R.drawable.round_cast_connected_20)
-                    }
-                }
-                if (it.contains("Zihan", ignoreCase = true)){
-                    if (it.contains("disconnected")){
-
-                        binding.kid2Status.setImageResource(R.drawable.ic_connection_error)
-                    }else{
-                        binding.kid2Status.setImageResource(R.drawable.round_cast_connected_20)
-                    }
-                }
-            }
-        }
 
         viewModel.imageBitmap.observe(this) { bitmap ->
 
@@ -193,23 +135,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        viewModel.isShowOnlyKidsComputer.observe(this) { isOnlyShowKidsComputer ->
-            isOnlyShowKidsComputer?.let {
-                if (isOnlyShowKidsComputer?:false){
-                    binding.choice.setText("KIDS ONLY")
-                }else{
-                    binding.choice.setText("ALL")
-                }
-            }
-        }
 
-        viewModel.isShowPhotos.observe(this) { isShowPhotos ->
-            isShowPhotos?.let {
-                if (isShowPhotos?:false){
-                    binding.choice.setText("Photos Only")
-                }
-            }
-        }
 
         val metrics = DisplayMetrics()
         (this as Activity).windowManager.defaultDisplay.getMetrics(metrics)

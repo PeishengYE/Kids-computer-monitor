@@ -7,4 +7,16 @@
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
 
     </style>
+    <style name="Theme.AppCompat.DayNight.NoActionBar.YEP" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="AppFullScreenTheme" parent="Theme.AppCompat.DayNight.NoActionBar.YEP">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

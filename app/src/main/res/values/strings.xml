@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MIV0920 </string>
+    <string name="app_name">CloudMonitor</string>
     <string name="click_to_start">Click to start</string>
     <string name="computer_online">Computer online</string>
     <string name="waiting">Waiting</string>
