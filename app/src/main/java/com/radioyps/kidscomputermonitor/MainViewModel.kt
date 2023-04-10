@@ -198,7 +198,7 @@ class MainViewModel() : ViewModel() {
         _isShowPhotos.value = true
     }
 
-    fun setImageViewDimention(height: Int, width: Int){
+    fun setImageViewDimention(width: Int,height : Int){
         imageViewHeight = height
         imageViewWidth = width
     }
@@ -416,13 +416,13 @@ class MainViewModel() : ViewModel() {
             BitmapFactory.decodeByteArray(input, 0, input.size,this)
 
             // Calculate inSampleSize
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-                 /* reduce the memory usage to prevent out of memory issue */
-                 inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)*2
-            else{
-                inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
-            }
-
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//                 /* reduce the memory usage to prevent out of memory issue */
+//                 inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)*2
+//            else{
+//                inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
+//            }
+            inSampleSize = calculateInSampleSize(this, imageViewWidth, imageViewHeight)
             // Decode bitmap with inSampleSize set
             inJustDecodeBounds = false
             Log.v(TAG, " decodeSampledBitmap()>> inSampleSize: " + inSampleSize + ", Start decoding...")
@@ -455,10 +455,13 @@ class MainViewModel() : ViewModel() {
                     con.connect()
                     responseCode = con.responseCode
                     if (responseCode == HttpURLConnection.HTTP_OK) {
-                        Log.v(TAG, " downloadImageFromPath()>> Start downloading with size: " + con.inputStream.available())
+                        Log.v(TAG, " downloadImageFromPath()>> Start downloading image from ngrok server")
 
                         //download
+                        /* Out of memory error when downloading a big JPEG file */
+
                         inputStreamImage = con.inputStream.readBytes()
+
 
 //                        val options = BitmapFactory.Options()
 //                        options.inPreferredConfig = Bitmap.Config.RGB_565
@@ -495,6 +498,11 @@ class MainViewModel() : ViewModel() {
                     )
                     Log.e("Exception", ex.toString())
 
+                } catch (ex: OutOfMemoryError){
+                    Log.v(
+                        TAG,
+                        " downloadImageFromPath()>> downloaded bmp file failed with Out of memory Exception"
+                    )
                 }
 
                 res
@@ -551,7 +559,7 @@ class MainViewModel() : ViewModel() {
 
     private fun parseNgrokUrl(input: String) : String{
 
-        var regex = Regex("""(\"public_url\"):\"(https://[a-z0-9-]+\.ngrok\.io)\"""")
+        var regex = Regex("""(\"public_url\"):\"(https://[a-z0-9-.]+)\".\"""")
         var ids = regex.find(input)
         if (ids == null){
             Log.v(TAG, "no valide string from Ngrok ")
