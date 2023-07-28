@@ -15,6 +15,7 @@ import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
+
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
@@ -36,7 +37,14 @@ class MainActivity : AppCompatActivity() {
     /**
      * Inflate layout.activity_main and setup data binding.
      */
-    private lateinit var  viewModelLocal: MainViewModel
+private lateinit var  viewModelLocal: MainViewModel
+private lateinit var viewModelFactory: MainViewModel.MainViewModelFactory
+//    private val viewModelLocal: MainViewModel by viewModels {
+//        MainViewModel.MainViewModelFactory(
+//            application
+//        )
+//    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,9 +90,9 @@ class MainActivity : AppCompatActivity() {
 
 
         // Get MainViewModel by passing a database to the factory
-
+        viewModelFactory = MainViewModel.MainViewModelFactory(application)
         val viewModel = ViewModelProviders
-            .of(this)
+            .of(this, viewModelFactory)
             .get(MainViewModel::class.java)
         viewModelLocal = viewModel
         binding.viewModel = viewModel

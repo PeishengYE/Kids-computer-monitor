@@ -1,16 +1,14 @@
 package com.radioyps.kidscomputermonitor
 
+import android.app.Application
+import android.content.Context
 import android.graphics.*
 import android.os.Build
+import android.os.Environment
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
-import java.io.BufferedReader
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.*
 import java.net.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,8 +23,9 @@ const val COMPUTER_1_NAME = "ZIHAN"
 const val COMPUTER_2_NAME = "ZIYI"
 const val COMPUTER_3_NAME = "bitmap"
 
-class MainViewModel() : ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
     val TAG = "MainViewModel"
+    val context = application.applicationContext
 
 
     /**
@@ -235,6 +234,31 @@ class MainViewModel() : ViewModel() {
 
 
 
+    }
+
+
+    fun saveBitmapAsPNG(): Boolean {
+        return try {
+            // Get the directory for external storage
+            val directory = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "kids")
+            if (!directory.exists()) {
+                directory.mkdirs()
+            }
+
+            // Create the file in the external storage directory
+            val file = File(directory, "kids.png")
+
+            // Compress the bitmap and save it to the file
+            val stream = FileOutputStream(file)
+            bmp?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.flush()
+            stream.close()
+
+            true // Return true if the file was successfully saved
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false // Return false if there was an error saving the file
+        }
     }
 
     fun drawTextToBitmap(
@@ -666,7 +690,10 @@ class MainViewModel() : ViewModel() {
             val gText = sdf.format(Date()) + " " + url?.substringAfterLast('/')
             _imageTimeStamp.value = gText
         }
-        if (bmp != null) res = true
+        if (bmp != null) {
+            saveBitmapAsPNG()
+            res = true
+        }
         return res
     }
 
@@ -754,6 +781,17 @@ class MainViewModel() : ViewModel() {
      */
     fun onSnackbarShown() {
         _snackBar.value = null
+    }
+
+    class MainViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                MainViewModel(application) as T
+            } else {
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
     }
 
 
