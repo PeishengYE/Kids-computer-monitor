@@ -1,10 +1,13 @@
 package com.radioyps.kidscomputermonitor
 
 import android.app.Application
-import android.content.Context
+import android.content.ContentValues
 import android.graphics.*
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
+import android.provider.ContactsContract.RawContacts.Data
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
@@ -236,29 +239,114 @@ class MainViewModel(application: Application) : ViewModel() {
 
     }
 
+    fun saveImageToMediaStore(prefix: String, bitmap: Bitmap ) {
+        if (bitmap == null) {
+            return
+        }
 
-    fun saveBitmapAsPNG(): Boolean {
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            saveImageUsingMediaStoreApi(prefix, bitmap)
+        } else {
+            saveImageToLegacyStorage(prefix, bitmap)
+        }
+    }
+
+    private fun saveImageUsingMediaStoreApi(prefix: String, bitmap: Bitmap ) {
+        val timetag = SimpleDateFormat("HHmmss", Locale.getDefault())
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "kids_" +prefix + "_" + timetag.format(Date()))
+            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+            put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        }
+
+        val imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+        imageUri?.let {
+            context.contentResolver.openOutputStream(it).use { outputStream ->
+                outputStream?.let {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it)
+                }
+            }
+        }
+
+        // Notify the MediaScanner about the new image
+        MediaScannerConnection.scanFile(context, arrayOf(imageUri.toString()), null, null)
+    }
+
+    private fun saveImageToLegacyStorage(name: String, bitmap: Bitmap) {
+        val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()
+        val datetag = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val directory = File(path, datetag.format(Date()))
+
+        Log.v(TAG, " saveImageToLegacyStorage()>> saving in ${directory}")
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+
+        // Create the file in the external storage directory
+        val timetag = SimpleDateFormat("HHmmss", Locale.getDefault())
+        val file = File(directory, name + "_"+ timetag.format(Date()) + ".png")
+
+
+        FileOutputStream(file).use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        }
+
+        // Notify the MediaScanner about the new image
+        MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null, null)
+    }
+
+
+    fun saveBitmapAsPNG(name:String, image: Bitmap?): Boolean {
         return try {
             // Get the directory for external storage
-            val directory = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "kids")
+            val datetag = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+            val directory = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), datetag.format(Date()))
+
+            Log.v(TAG, " saveBitmapAsPNG()>> saving in ${directory}")
             if (!directory.exists()) {
                 directory.mkdirs()
             }
 
             // Create the file in the external storage directory
-            val file = File(directory, "kids.png")
+            val timetag = SimpleDateFormat("HHmmss", Locale.getDefault())
+            val file = File(directory, name + "_"+ timetag.format(Date()) + ".png")
 
             // Compress the bitmap and save it to the file
             val stream = FileOutputStream(file)
-            bmp?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            image?.compress(Bitmap.CompressFormat.PNG, 50, stream)
             stream.flush()
             stream.close()
+            MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null, null)
 
             true // Return true if the file was successfully saved
         } catch (e: IOException) {
             e.printStackTrace()
             false // Return false if there was an error saving the file
         }
+    }
+
+
+    fun copyBitmap(sourceBitmap: Bitmap?): Bitmap? {
+        if (sourceBitmap == null) {
+            return null
+        }
+
+        // Convert the sourceBitmap to a mutable bitmap
+        val mutableBitmap = sourceBitmap.copy(Bitmap.Config.RGB_565, true)
+
+        // Create a new bitmap with the same width and height as the source bitmap
+        val copyBitmap = Bitmap.createBitmap(mutableBitmap.width, mutableBitmap.height, mutableBitmap.config)
+
+        // Create a canvas to draw on the new bitmap
+        val canvas = Canvas(copyBitmap)
+
+        // Draw the source bitmap on the canvas of the new bitmap
+        canvas.drawBitmap(mutableBitmap, 0f, 0f, null)
+
+        return copyBitmap
     }
 
     fun drawTextToBitmap(
@@ -286,9 +374,9 @@ class MainViewModel(application: Application) : ViewModel() {
         paint.color = Color.rgb(0, 0, 0xff)
         // text size in pixels
         if (image.width < 1500){
-            paint.setTextSize((14 * 2.0).toFloat())
+            paint.setTextSize((24 * 2.0).toFloat())
         }else{
-            paint.setTextSize((14 * 10.0).toFloat())
+            paint.setTextSize((24 * 10.0).toFloat())
         }
 
         // text shadow
@@ -672,7 +760,22 @@ class MainViewModel(application: Application) : ViewModel() {
 
     }
 
-    private suspend fun getImage(url: String):Boolean{
+    private  fun saveImageInExternalStorage(name: String){
+        val savingScope = CoroutineScope(Dispatchers.Default)
+        savingScope.launch {
+            if (bmp != null) {
+                var newBmp = copyBitmap(bmp)
+                drawTextToBitmap(name, newBmp!!)
+//                saveImageToLegacyStorage(name, newBmp)
+                saveImageToMediaStore(name, newBmp)
+                saveBitmapAsPNG(name, newBmp)
+            }
+        }
+    }
+
+
+
+    private suspend fun getImage(url: String, name: String):Boolean{
         if(bmp != null){
             /* reduce the memory usage to prevent out of memory issue
             *  Very important to recycle the bitmap as soon as we do not need it */
@@ -691,7 +794,9 @@ class MainViewModel(application: Application) : ViewModel() {
             _imageTimeStamp.value = gText
         }
         if (bmp != null) {
-            saveBitmapAsPNG()
+            if (bmp != null){
+                saveImageInExternalStorage(name)
+            }
             res = true
         }
         return res
@@ -706,7 +811,7 @@ class MainViewModel(application: Application) : ViewModel() {
             while (isContinueScanScreenshot) {
                 if (_isShowPhotos.value?:false){
                     URL_SCREENSHOT = "${ngrokPublicUrl}/image"
-                    val goodDownloading = getImage(URL_SCREENSHOT)
+                    val goodDownloading = getImage(URL_SCREENSHOT, "image")
                     if (goodDownloading)
                        delay(25000)
                     continue
@@ -725,13 +830,14 @@ class MainViewModel(application: Application) : ViewModel() {
                             _currentComputerName.value = it.name
                             var count = 5
                             while (count > 0){
-                                val goodDownloading = getImage(URL_SCREENSHOT)
+                                val goodDownloading = getImage(URL_SCREENSHOT, it.name)
                                 if (goodDownloading){
                                    break
                                 }
                                 delay(200)
                                 count --
                             }
+
                             delay(5000)
 
                             _connectStatus.value = "${it.name} connected"
@@ -747,7 +853,7 @@ class MainViewModel(application: Application) : ViewModel() {
                     noOneOnlineCount++
                     if (noOneOnlineCount>= 5){
                         URL_SCREENSHOT = "${ngrokPublicUrl}/image"
-                        val goodDownloading = getImage(URL_SCREENSHOT)
+                        val goodDownloading = getImage(URL_SCREENSHOT, "image")
                         if (goodDownloading)
                             delay(5000)
                     }
